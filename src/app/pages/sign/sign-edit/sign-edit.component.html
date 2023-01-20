@@ -1,0 +1,41 @@
+<form class="example-container" [formGroup]="form" (submit)="operate()">
+    <div [hidden]="true">
+      <mat-form-field class="example-full-width">
+        <input matInput placeholder="ID" required formControlName="idVitalSign">
+      </mat-form-field>
+    </div>
+    <mat-form-field>
+      <input matInput placeholder="Patient" [matAutocomplete]="autoPatient" [formControl]="patientControl" formControlName="patient">
+      <mat-autocomplete #autoPatient="matAutocomplete" [displayWith]="showPatient">
+          <mat-option *ngFor="let p of patientsFiltered$ | async" [value]="p">
+              {{p.firstName}} {{p.lastName}}
+          </mat-option>
+      </mat-autocomplete>
+  </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Select a date</mat-label>
+        <input matInput [matDatepicker]="picker"  formControlName="signDate" >
+        <mat-hint>DD/MM/YYYY</mat-hint>
+        <mat-datepicker-toggle matSuffix [for]="picker" ></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <input matInput placeholder="temperature" required formControlName="temperature">
+      </mat-form-field>
+      <mat-form-field class="example-full-width">
+        <input matInput placeholder="pulse" required formControlName="pulse">
+      </mat-form-field>
+      <mat-form-field class="example-full-width">
+        <input matInput placeholder="respiratory" required formControlName="respiratory">
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit">
+        <mat-icon>done</mat-icon>
+        <span>Aceptar</span>
+      </button>
+      <button mat-raised-button color="accent" type="button" routerLink="/pages/sign">
+        <mat-icon>cancel</mat-icon>
+        <span>Cancelar</span>
+      </button>
+
+  </form>
