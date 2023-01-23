@@ -17,7 +17,8 @@ export class PerfilComponent implements OnInit {
     let token = sessionStorage.getItem(environment.TOKEN_NAME);
     const decodedToken = helper.decodeToken(token);
     this.username = decodedToken.user_name;
-    this.userrol = decodedToken.authorities;
+    let rol = decodedToken.authorities;
+       this.userrol = rol[0];
 
   }
 

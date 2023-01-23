@@ -110,9 +110,5 @@ export class SignComponent implements OnInit {
     return this.route.children.length != 0;
   }
 
-  showMore(e: any){
-    this.patientSignService.listPageable(e.pageIndex, e.pageSize).subscribe(data => {
-      this.createTable(data);
-    });
-  }
+
 }

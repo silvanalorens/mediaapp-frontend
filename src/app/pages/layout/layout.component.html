@@ -15,7 +15,7 @@
         </button>
 
         <mat-menu #menu="matMenu">
-            <button mat-menu-item>
+            <button mat-menu-item  routerLink="/pages/perfil">
                 <mat-icon>account_box</mat-icon>
                 <span>My account</span>
             </button>
@@ -99,7 +99,7 @@
             <mat-card *ngFor="let breadcrumb of (breadcrumbs$ | async)">
                 <a [href]="breadcrumb.url"> {{ breadcrumb.label }}</a>
             </mat-card> -->
-            
+
             <router-outlet></router-outlet>
         </mat-sidenav-content>
 

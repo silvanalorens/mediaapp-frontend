@@ -11,6 +11,7 @@ import { MedicComponent } from './medic/medic.component';
 import { Not403Component } from './not403/not403.component';
 import { PatientEditComponent } from './patient/patient-edit/patient-edit.component';
 import { PatientComponent } from './patient/patient.component';
+import { PerfilComponent } from './perfil/perfil.component';
 import { ReportComponent } from './report/report.component';
 import { SearchComponent } from './search/search.component';
 import { SignEditComponent } from './sign/sign-edit/sign-edit.component';
@@ -24,6 +25,12 @@ export const routes: Routes = [
       component: DashboardComponent,
       data: { breadcrumb: 'Dashboard' },
       canActivate: [ GuardService ]
+    },
+    {
+      path: 'perfil',
+      component: PerfilComponent,
+      data: { breadcrumb: 'Perfil' }
+
     },
     {
         path: 'patient',
