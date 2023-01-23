@@ -3,7 +3,7 @@ import { environment } from './../../environments/environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Injectable } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpResponse } from '@angular/common/http';
-import { Observable, EMPTY } from 'rxjs'; 
+import { Observable, EMPTY } from 'rxjs';
 import { tap, catchError, retry } from 'rxjs/operators';
 
 @Injectable({
@@ -18,12 +18,13 @@ export class ServerErrorsInterceptor implements HttpInterceptor {
             .pipe(tap(event => {
                 if (event instanceof HttpResponse) {
                     if (event.body && event.body.error === true && event.body.errorMessage) {
+                        console.log("error dentro ")
                         throw new Error(event.body.errorMessage);
                     }/*else{
-                        this.snackBar.open("EXITO", 'AVISO', { duration: 5000 });    
+                        this.snackBar.open("EXITO", 'AVISO', { duration: 5000 });
                     }*/
                 }
-            })).pipe(catchError((err) => {                
+            })).pipe(catchError((err) => {
                 //https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
                 if (err.status === 400) {
                     this.snackBar.open(err.message, 'ERROR 400', { duration: 5000 });
@@ -40,6 +41,7 @@ export class ServerErrorsInterceptor implements HttpInterceptor {
                 else if (err.status === 500) {
                     this.snackBar.open(err.error.mensaje, 'ERROR 500', { duration: 5000 });
                 } else {
+                    console.log(err.error);
                     this.snackBar.open(err.error.mensaje, 'ERROR', { duration: 5000 });
                 }
                 return EMPTY;

@@ -6,6 +6,7 @@ import { SignService } from 'src/app/service/sign.service';
 import { map, Observable, switchMap } from 'rxjs';
 import { Patient } from 'src/app/model/patient';
 import { PatientService } from 'src/app/service/patient.service';
+import * as moment from 'moment';
 @Component({
   selector: 'app-sign-edit',
   templateUrl: './sign-edit.component.html',
@@ -17,7 +18,12 @@ export class SignEditComponent implements OnInit {
   form: FormGroup;
   patientControl: FormControl = new FormControl();
   patients: Patient[];
+
+  patient = new Patient();
+  signs: PatientSign[] = [];
   patientsFiltered$: Observable<Patient[]>;
+  stringifiedData: any;
+  parsedJson: Patient;
   constructor(
     private signService: SignService,
     private patientService: PatientService,
@@ -67,6 +73,8 @@ export class SignEditComponent implements OnInit {
 
         console.log(data.idPatient);
         this.patientControl.setValue(data) ;
+        this.patient = data;
+        console.log(this.patient);
        this.patientsFiltered$ = this.patientControl.valueChanges.pipe(map(val =>this.filterPatients(data)));
       });
     }
@@ -97,22 +105,59 @@ export class SignEditComponent implements OnInit {
   operate(){
     if (this.form.invalid)
       return;
+    console.log(this.patient);
+    if (this.isEdit){
+          //copy data to objeto Patient
 
-    const sign = new PatientSign();
-    sign.idVitalSign = this.form.value['idVitalSign'];
-    sign.signDate = this.form.value['signDate'];
-    sign.temperature = this.form.value['temperature'];
-    sign.pulse = this.form.value['pulse'];
-    sign.respiratory = this.form.value['respiratory'];
+      let signUpdating = this.patient.signs.find((sign)=> sign.idVitalSign == this.form.value['idVitalSign']);
+      signUpdating.temperature =  this.form.value['temperature'];
+      signUpdating.signDate = moment(this.form.value['signDate']).format('YYYY-MM-DDTHH:mm:ss');
+      signUpdating.pulse =  this.form.value['pulse'];
+      signUpdating.respiratory =  this.form.value['respiratory'];
 
-    const patient = new Patient();
-    console.log(this.patientControl.value);
-    //patient.signs.push(sign);
+      console.log('modificado');
+      console.log(this.patient);
+
+      this.stringifiedData = JSON.stringify(this.patient);
+      console.log("With Stringify :" , this.stringifiedData);
+      this.parsedJson = JSON.parse(this.stringifiedData);
+      console.log("With Parsed JSON :" , this.parsedJson);
+
+    }
+    else {
+      //nuevo
+
+      const signNew = new PatientSign();
+      this.patient = this.patientControl.value
+
+      signNew.signDate = this.form.value['signDate'];
+      signNew.temperature = this.form.value['temperature'];
+      signNew.pulse = this.form.value['pulse'];
+      signNew.respiratory = this.form.value['respiratory'];
+      console.log('modificado');
+
+      this.patient.signs.push(signNew);
+      console.log(this.patient);
+
+    }
+
+    this.patientService.update(this.patient).subscribe((data) => {
+      console.log("actualizado");
 
 
-    this.router.navigate(['/pages/sign']);
+    });
 
+    this.patientService.update(this.patient).pipe(switchMap( (data)=> {
+      return this.signService.findAll();
 
+    }))
+    .subscribe(data => {
+      this.signService.setPatientSignChange(data);
+      this.signService.setMessageChange('UPDATED!');
+
+    });
+
+   this.router.navigate(['/pages/sign']);
   }
 
   get f(){
