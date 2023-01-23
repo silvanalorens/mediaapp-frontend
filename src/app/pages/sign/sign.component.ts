@@ -8,6 +8,8 @@ import { switchMap } from 'rxjs';
 import { PatientSign } from 'src/app/model/patientSign';
 import { ActivatedRoute } from '@angular/router';
 import { SignService } from 'src/app/service/sign.service';
+import { Patient } from 'src/app/model/patient';
+import { PatientService } from 'src/app/service/patient.service';
 
 @Component({
   selector: 'app-sign',
@@ -17,7 +19,7 @@ import { SignService } from 'src/app/service/sign.service';
 export class SignComponent implements OnInit {
   patientSigns : PatientSign[] = [];
   displayedColumns: string[] = ['patientIdPatient','patientFirstName','patientLastName','idVitalSign', 'signDate','temperature','pulse','respiratory', 'actions'];
-
+  patient: Patient;
   dataSource: MatTableDataSource<PatientSign>;
 
   //@ViewChild(MatPaginator) paginator: MatPaginator;
@@ -28,6 +30,7 @@ export class SignComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private patientSignService: SignService,
+    private patientService: PatientService,
     private snackBar: MatSnackBar,
     private router: Router
 
@@ -68,13 +71,30 @@ export class SignComponent implements OnInit {
   }
 
   delete(idPatientSign: number){
-    this.patientSignService.delete(idPatientSign).pipe(switchMap( ()=> {
+    this.patientSignService.findPatientById(idPatientSign).subscribe((data) => {
+      //this.patientControl.setValue( data);
+      console.log('selected id patient' );
+
+      console.log(data.idPatient);
+
+      this.patient = data;
+      console.log(this.patient);
+    });
+
+    alert('delete');
+    let nroSignDelete = this.patient.signs.findIndex(el =>
+      el.idVitalSign === idPatientSign
+    );
+    this.patient.signs.splice(nroSignDelete,1);
+    this.patientService.update(this.patient).pipe(switchMap( ()=> {
       return this.patientSignService.findAll();
     }))
     .subscribe(data => {
       this.patientSignService.setPatientSignChange(data);
       this.patientSignService.setMessageChange('DELETED!');
     });
+
+
   }
 
   createTable(data: any){
