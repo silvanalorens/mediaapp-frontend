@@ -10,7 +10,7 @@ import { GenericService } from './generic.service';
   providedIn: 'root'
 })
 export class SignService extends GenericService<PatientSign> {
-  private patientSignChange = new Subject<PatientSign[]>;
+  private signsChange$ = new Subject<PatientSign[]>;
   private messageChange = new Subject<string>;
 
   constructor(protected override http: HttpClient) {
@@ -26,11 +26,11 @@ export class SignService extends GenericService<PatientSign> {
     return this.http.get<any>(`${this.url}/parent/${id}`);
   }
   setPatientSignChange(data: PatientSign[]){
-    this.patientSignChange.next(data);
+    this.signsChange$.next(data);
   }
 
   getPatientSignChange(){
-    return this.patientSignChange.asObservable();
+    return this.signsChange$.asObservable();
   }
 
   setMessageChange(data: string) {

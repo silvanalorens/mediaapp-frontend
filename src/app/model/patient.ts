@@ -1,4 +1,4 @@
-import { PatientSign } from "./patientSign";
+
 
 export class Patient {
 //export interface Patient {
@@ -9,5 +9,5 @@ export class Patient {
     address: string;
     phone: string;
     email: string;
-    signs: PatientSign[];
+
 }

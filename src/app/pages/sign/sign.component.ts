@@ -23,7 +23,7 @@ export class SignComponent implements OnInit {
   dataSource: MatTableDataSource<PatientSign>;
 
   //@ViewChild(MatPaginator) paginator: MatPaginator;
-  //@ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort) sort: MatSort;
 
   totalElements: number;
 
@@ -40,20 +40,19 @@ export class SignComponent implements OnInit {
     this.patientSignService.findAll().subscribe(data => {
       this.createTable(data);
       console.log(data);
+      this.patientSignService.getPatientSignChange().subscribe(data => {
+        this.createTable(data);
+        console.log(data);
+      });
+      this.patientSignService.getMessageChange().subscribe(data => {
+        this.snackBar.open(data, 'INFO', { duration: 2000, verticalPosition: "top", horizontalPosition: "right" });
+      });
+       })
+    /*
 
-      //this.patientSigns = data;
-    })
-    /*this.patientSignService.getPatientSignChange().subscribe(data => {
-      //this.patientSigns = data;
-      this.createTable(data);
-      console.log(data);
-    });
 
 
 
-    this.patientSignService.getMessageChange().subscribe(data => {
-      this.snackBar.open(data, 'INFO', { duration: 2000, verticalPosition: "top", horizontalPosition: "right" });
-    });
 
     this.patientSignService.listPageable(0, 2).subscribe(data => {
      // this.createTable(data);
@@ -71,22 +70,7 @@ export class SignComponent implements OnInit {
   }
 
   delete(idPatientSign: number){
-    this.patientSignService.findPatientById(idPatientSign).subscribe((data) => {
-      //this.patientControl.setValue( data);
-      console.log('selected id patient' );
-
-      console.log(data.idPatient);
-
-      this.patient = data;
-      console.log(this.patient);
-    });
-
-    alert('delete');
-    let nroSignDelete = this.patient.signs.findIndex(el =>
-      el.idVitalSign === idPatientSign
-    );
-    this.patient.signs.splice(nroSignDelete,1);
-    this.patientService.update(this.patient).pipe(switchMap( ()=> {
+    this.patientSignService.delete(idPatientSign).pipe(switchMap( ()=> {
       return this.patientSignService.findAll();
     }))
     .subscribe(data => {
@@ -103,6 +87,7 @@ export class SignComponent implements OnInit {
 
     //this.dataSource.paginator = this.paginator;
     this.totalElements = data.totalElements;
+    this.dataSource.sort = this.sort;
 
   }
 

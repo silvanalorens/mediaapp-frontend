@@ -6,4 +6,5 @@ export class PatientSign{
   temperature: string;
   pulse: string;
   respiratory: string;
+  patient:Patient;
 }

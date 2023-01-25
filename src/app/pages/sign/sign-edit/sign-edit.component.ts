@@ -108,8 +108,8 @@ export class SignEditComponent implements OnInit {
     console.log(this.patient);
     if (this.isEdit){
           //copy data to objeto Patient
-
-      let signUpdating = this.patient.signs.find((sign)=> sign.idVitalSign == this.form.value['idVitalSign']);
+          let signUpdating = new PatientSign();
+      signUpdating.idVitalSign = this.form.value['idVitalSign'];
       signUpdating.temperature =  this.form.value['temperature'];
       signUpdating.signDate = moment(this.form.value['signDate']).format('YYYY-MM-DDTHH:mm:ss');
       signUpdating.pulse =  this.form.value['pulse'];
@@ -117,11 +117,25 @@ export class SignEditComponent implements OnInit {
 
       console.log('modificado');
       console.log(this.patient);
+      signUpdating.patient = this.patient;
 
       this.stringifiedData = JSON.stringify(this.patient);
-      console.log("With Stringify :" , this.stringifiedData);
+
       this.parsedJson = JSON.parse(this.stringifiedData);
-      console.log("With Parsed JSON :" , this.parsedJson);
+
+
+      this.signService.update(signUpdating).pipe(switchMap( (data)=> {
+        console.log("actualizado");
+        console.log(data);
+        return this.signService.findAll();
+
+      })).subscribe((data1) => {
+
+
+        this.signService.setPatientSignChange(data1);
+        this.signService.setMessageChange('UPDATED!');
+
+      });
 
     }
     else {
@@ -134,28 +148,27 @@ export class SignEditComponent implements OnInit {
       signNew.temperature = this.form.value['temperature'];
       signNew.pulse = this.form.value['pulse'];
       signNew.respiratory = this.form.value['respiratory'];
+      signNew.patient = this.patient;
       console.log('modificado');
 
-      this.patient.signs.push(signNew);
+
       console.log(this.patient);
+      this.signService.save(signNew).pipe(switchMap( (data)=> {
+        return this.signService.findAll();
+
+      })).subscribe((data) => {
+        this.signService.setPatientSignChange(data);
+        this.signService.setMessageChange('CREATED!');
+        console.log("creado");
+
+
+
+      });
 
     }
 
-    this.patientService.update(this.patient).subscribe((data) => {
-      console.log("actualizado");
 
 
-    });
-
-    this.patientService.update(this.patient).pipe(switchMap( (data)=> {
-      return this.signService.findAll();
-
-    }))
-    .subscribe(data => {
-      this.signService.setPatientSignChange(data);
-      this.signService.setMessageChange('UPDATED!');
-
-    });
 
    this.router.navigate(['/pages/sign']);
   }
